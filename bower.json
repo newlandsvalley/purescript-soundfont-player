@@ -1,0 +1,17 @@
+{
+  "name": "purescript-soundfont-player",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-soundfonts": "https://github.com/newlandsvalley/purescript-polyphonic-soundfonts.git",
+    "purescript-generics-rep": "^5.1.0",
+    "purescript-pux": "^9.1.0"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "^3.0.0"
+  }
+}
