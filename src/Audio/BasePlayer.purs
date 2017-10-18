@@ -1,5 +1,5 @@
 module Audio.BasePlayer
-  (Melody, MidiPhrase, PlaybackState(..), State, Event (SetMelody, PlayMelody), initialState, foldp, setMelody, view) where
+  (Melody, MidiPhrase, PlaybackState(..), State, Event (SetInstruments, SetMelody, PlayMelody), initialState, foldp, setMelody, view) where
 
 import CSS.TextAlign (center, textAlign)
 import Audio.SoundFont (AUDIO, Instrument, MidiNote, playNotes)
@@ -83,6 +83,11 @@ initialState =
   , lastPhraseLength : 0.0
   }
 
+-- | set the instrument sound fonts to use
+setInstruments :: Array Instrument -> State -> State
+setInstruments instruments state =
+  state { instruments = instruments }
+
 -- | set the source of the melody directly as a Melody itself (needing no transformation)
 setMelody :: Melody -> State -> State
 setMelody melody state =
@@ -92,7 +97,7 @@ setMelody melody state =
 foldp :: ∀ fx. Event -> State -> EffModel State Event (au :: AUDIO | fx)
 foldp NoOp state =  noEffects $ state
 foldp (SetInstruments instruments) state =
-  noEffects $ state { instruments = instruments }
+  noEffects $ setInstruments instruments state
 foldp (SetMelody melody) state =
   noEffects $ setMelody melody state
 foldp (StepMelody delay) state =
