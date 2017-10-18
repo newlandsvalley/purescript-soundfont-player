@@ -1,5 +1,5 @@
 module Audio.BasePlayer
-  (Melody, MidiPhrase, PlaybackState(..), State, Event (SetInstruments, SetMelody, PlayMelody), initialState, foldp, setMelody, view) where
+  (Melody, MidiPhrase, PlaybackState(..), State, Event (SetInstruments, SetMelody, PlayMelody), initialState, foldp, setInstruments, setMelody, view) where
 
 import CSS.TextAlign (center, textAlign)
 import Audio.SoundFont (AUDIO, Instrument, MidiNote, playNotes)
