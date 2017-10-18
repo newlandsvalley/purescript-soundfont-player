@@ -2,7 +2,7 @@ module Audio.BasePlayer
   (Melody, MidiPhrase, PlaybackState(..), State, Event (SetMelody, PlayMelody), initialState, foldp, setMelody, view) where
 
 import CSS.TextAlign (center, textAlign)
-import Audio.SoundFont (AUDIO, MidiNote, playNotes)
+import Audio.SoundFont (AUDIO, Instrument, MidiNote, playNotes)
 import CSS (color, fromString)
 import CSS.Background (background, backgroundImages)
 import CSS.Border (border, borderRadius, solid)
@@ -34,6 +34,7 @@ import Data.Generic.Rep.Show (genericShow)
 -- | (which wraps it) to provide the Melody Source.  The idea is that we can then
 -- | have different players - a MIDI player, an ABC player and an HSoM player all
 -- | of which essentially 'inherit' from the base player.
+-- | The soundfont instruments must be supplied if you want any sound!
 -- | The melody should only be established when the Play button is first pressed.
 
 -- | a Melody is the entity that is played by the MIDI player
@@ -43,19 +44,21 @@ type Melody = Array MidiPhrase
 -- | Player events,  Only SetMelody and PlayMelody is exposed.
 data Event
   = NoOp
-  | SetMelody Melody           -- instantiate the melody to be played
-  | StepMelody Number          -- step to the next phrase
-                               -- not exposed but its presence allows a view update
-  | PlayMelody PlaybackState   -- play | pause
-  | EnablePlayButton           -- re-enable the pause/play button (after a pause)
-  | StopMelody                 -- stop and set index to zero
+  | SetInstruments (Array Instrument)   -- set the available instruments
+  | SetMelody Melody                    -- instantiate the melody to be played
+  | StepMelody Number                   -- step to the next phrase
+                                        -- not exposed but its presence allows a view update
+  | PlayMelody PlaybackState            -- play | pause
+  | EnablePlayButton                    -- re-enable the pause/play button (after a pause)
+  | StopMelody                          -- stop and set index to zero
 
 -- | the internal state of the player
 type State =
-  { melody :: Melody           -- the melody to play
-  , playing :: PlaybackState   -- the state of the playback
-  , phraseIndex :: Int         -- the current phrase being played
-  , lastPhraseLength :: Number -- the duration of the phrase currently playing
+  { instruments :: Array Instrument  -- the instrument soundfonts available
+  , melody :: Melody                 -- the melody to play
+  , playing :: PlaybackState         -- the state of the playback
+  , phraseIndex :: Int               -- the current phrase being played
+  , lastPhraseLength :: Number       -- the duration of the phrase currently playing
   }
 
 -- | now we have tri-state logic for playback state because of the pending status
@@ -73,7 +76,8 @@ instance eqEvent :: Eq PlaybackState where
 -- | the initial state of the player (with no melody to play yet)
 initialState :: State
 initialState =
-  { melody : []
+  { instruments : []
+  , melody : []
   , playing : PAUSED
   , phraseIndex : 0
   , lastPhraseLength : 0.0
@@ -87,6 +91,8 @@ setMelody melody state =
 -- | the autonomous state update
 foldp :: ∀ fx. Event -> State -> EffModel State Event (au :: AUDIO | fx)
 foldp NoOp state =  noEffects $ state
+foldp (SetInstruments instruments) state =
+  noEffects $ state { instruments = instruments }
 foldp (SetMelody melody) state =
   noEffects $ setMelody melody state
 foldp (StepMelody delay) state =
@@ -122,7 +128,7 @@ step state sDelay =
         , effects:
           [ do
               _ <- delay (Milliseconds msDelay)
-              nextDelay <- liftEff (playEvent midiPhrase)
+              nextDelay <- liftEff (playEvent state.instruments midiPhrase)
               pure $ Just (StepMelody nextDelay)
           ]
         }
@@ -146,9 +152,9 @@ temporarilyFreezePlayButton state =
 
 -- | play a MIDI Phrase (a bunch of MIDI notes)
 -- | only NoteOn events produce sound
-playEvent :: forall eff. MidiPhrase -> Eff (au :: AUDIO | eff) Number
-playEvent midiPhrase =
-  playNotes midiPhrase
+playEvent :: forall eff. Array Instrument -> MidiPhrase -> Eff (au :: AUDIO | eff) Number
+playEvent instruments midiPhrase =
+  playNotes instruments midiPhrase
 
 -- | locate the next MIDI phrase from the performance
 locateNextPhrase :: State -> Maybe MidiPhrase

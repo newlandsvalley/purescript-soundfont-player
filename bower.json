@@ -7,9 +7,9 @@
     "output"
   ],
   "dependencies": {
-    "purescript-soundfonts": "https://github.com/newlandsvalley/purescript-polyphonic-soundfonts.git#1.0.0",
+    "purescript-soundfonts": "https://github.com/newlandsvalley/purescript-soundfonts.git#1.1.0",
     "purescript-generics-rep": "^5.1.0",
-    "purescript-pux": "^9.1.0"
+    "purescript-pux": "^12.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^3.0.0"
