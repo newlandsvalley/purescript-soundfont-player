@@ -74,9 +74,9 @@ instance eqEvent :: Eq PlaybackState where
   eq = genericEq
 
 -- | the initial state of the player (with no melody to play yet)
-initialState :: State
-initialState =
-  { instruments : []
+initialState :: Array Instrument -> State
+initialState instruments =
+  { instruments : instruments
   , melody : []
   , playing : PAUSED
   , phraseIndex : 0
