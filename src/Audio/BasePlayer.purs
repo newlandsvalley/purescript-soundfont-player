@@ -86,12 +86,12 @@ initialState instruments =
 -- | set the instrument sound fonts to use
 setInstruments :: Array Instrument -> State -> State
 setInstruments instruments state =
-  state { instruments = instruments }
+  state { instruments = instruments, playing = PAUSED }
 
 -- | set the source of the melody directly as a Melody itself (needing no transformation)
 setMelody :: Melody -> State -> State
 setMelody melody state =
-  state { melody = melody, phraseIndex = 0, lastPhraseLength = 0.0 }
+  state { melody = melody, phraseIndex = 0, lastPhraseLength = 0.0, playing = PAUSED }
 
 -- | the autonomous state update
 foldp :: ∀ fx. Event -> State -> EffModel State Event (au :: AUDIO | fx)
