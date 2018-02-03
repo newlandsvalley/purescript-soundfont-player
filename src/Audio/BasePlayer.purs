@@ -1,8 +1,9 @@
 module Audio.BasePlayer
-  (Melody, MidiPhrase, PlaybackState(..), State, Event (SetInstruments, SetMelody, PlayMelody), initialState, foldp, setInstruments, setMelody, view) where
+  (PlaybackState(..), State, Event (SetInstruments, SetMelody, PlayMelody), initialState, foldp, setInstruments, setMelody, view) where
 
 import CSS.TextAlign (center, textAlign)
-import Audio.SoundFont (AUDIO, Instrument, MidiNote, playNotes)
+import Audio.SoundFont (AUDIO, Instrument, playNotes)
+import Audio.SoundFont.Melody (MidiPhrase, Melody)
 import CSS (color, fromString)
 import CSS.Background (background, backgroundImages)
 import CSS.Border (border, borderRadius, solid)
@@ -38,8 +39,10 @@ import Data.Generic.Rep.Show (genericShow)
 -- | The melody should only be established when the Play button is first pressed.
 
 -- | a Melody is the entity that is played by the MIDI player
+{-}
 type MidiPhrase = Array MidiNote
 type Melody = Array MidiPhrase
+-}
 
 -- | Player events,  Only SetMelody and PlayMelody is exposed.
 data Event
